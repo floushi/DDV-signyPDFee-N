@@ -1,0 +1,519 @@
+:root {
+    --primary-color: #2196F3;
+    --danger-color: #f44336;
+    --success-color: #4CAF50;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header img {
+    max-width: 300px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+/* PDF Container with Scrollbar */
+#pdf-container {
+    width: 100%;
+    max-height: 600px;
+    margin-bottom: 2rem;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    overflow-y: auto;
+    background-color: #f5f5f5;
+}
+
+#pdf-pages {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#pdf-pages canvas {
+    width: 100%;
+    height: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+/* Form Styles */
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    position: relative;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+}
+
+input[type="text"],
+input[type="email"] {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+/* Checkbox Styles */
+.checkbox-group {
+    margin: 2rem 0;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0.3rem 0.5rem 0 0;
+    width: 18px;
+    height: 18px;
+}
+
+/* Signature Method Selection */
+.signature-method-selection {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.signature-method-selection h3 {
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.signature-method-selection .btn-secondary {
+    margin: 0 5px;
+    transition: all 0.2s;
+}
+
+.signature-method-selection .btn-secondary.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Signature Section Styles */
+.signature-section {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    position: relative;
+}
+
+.signature-section:nth-child(odd) {
+    background-color: #f8f9fa;
+}
+
+.signature-section:nth-child(even) {
+    background-color: #fff5f5;
+}
+
+/* Signature Group Styles */
+.signature-group {
+    margin: 1rem 0;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    background-color: white;
+    position: relative;
+}
+
+.signature-group h3 {
+    margin: 0 0 1rem 0;
+    color: #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.signature-instruction {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.signature-pad-container {
+    position: relative;
+    width: 100%;
+}
+
+.signature-pad-container canvas {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    background-color: white;
+    touch-action: none;
+}
+
+.signature-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0;
+    box-shadow: var(--box-shadow);
+}
+
+.keyboard-signature-error {
+    color: var(--danger-color);
+    margin-top: 0.5rem;
+    font-size: 14px;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    background-color: #ffebee;
+    border: 1px solid var(--danger-color);
+    display: none;
+}
+
+.keyboard-signature-error.show {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.keyboard-signature.error input[type="text"] {
+    border-color: var(--danger-color);
+}
+
+/* Signature Alternative Styles */
+.signature-alternative {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.signature-option-text {
+    color: #666;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+}
+
+.keyboard-signature {
+    margin-top: 1rem;
+}
+
+.signature-option-box {
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    padding: 10px;
+    margin-bottom: 1rem;
+}
+
+.keyboard-signature input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.font-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.font-preview {
+    position: relative;
+}
+
+.font-preview input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.preview-label {
+    display: block;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.preview-label {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 4em;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.preview-title {
+    color: #666;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.9em;
+}
+
+.preview-signature {
+    font-size: 1.9em;
+}
+
+.font-preview input[type="radio"]:checked + .preview-label {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+.dancing-script {
+    font-family: 'Dancing Script', cursive;
+}
+
+.barlow {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+}
+
+.signature-status {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 48px;
+    height: 48px;
+    display: none;
+}
+
+.signature-status.signed {
+    display: block;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle fill="%234CAF50" cx="12" cy="12" r="10" stroke="%234CAF50" stroke-width="2"/><path fill="white" d="M9.75 15.17L6.83 12.25l-1.42 1.41L9.75 18 19 8.75l-1.41-1.41L9.75 15.17z"/></svg>');
+}
+
+/* Font Face Declarations */
+@font-face {
+    font-family: 'Dancing Script';
+    src: url('/fonts/DancingScript-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Barlow Semi Condensed';
+    src: url('/fonts/BarlowSemiCondensed-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Error and Success Messages */
+.error-message {
+    color: var(--danger-color);
+    margin-top: 0.5rem;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    background-color: #ffebee;
+    border: 1px solid var(--danger-color);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.success-message {
+    font-size: 1.25em;
+    background-color: #85d177;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-top: 1rem;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.success-view {
+    max-width: 800px;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.success-view h2 {
+    font-size: 3em;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.email-notice {
+    margin-top: 1rem;
+    color: #666;
+    font-size: 1.25em;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Field-specific error messages */
+.form-group .error-message {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-top: 0.25rem;
+    z-index: 1;
+}
+
+.checkbox-group .error-message {
+    margin-left: 1.5rem;
+}
+
+.signature-group .error-message {
+    margin-top: 0.5rem;
+    position: relative;
+}
+
+/* Button Styles */
+.button-container {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-delete {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #d32f2f;
+    box-shadow: var(--box-shadow);
+}
+
+.btn-submit {
+    background-color: var(--success-color);
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 18px;
+}
+
+.btn-submit:hover {
+    background-color: #388E3C;
+    box-shadow: var(--box-shadow);
+}
+
+.btn-submit:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Footer Styles */
+.footer-text {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .form-container {
+        padding: 1rem;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    #pdf-container {
+        max-height: 400px;
+    }
+}

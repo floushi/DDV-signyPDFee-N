@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+.env
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+/dist
+/build
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated files
+/public/*.pdf
+/generated-icon.png
+
+# Replit
+.replit
+replit.nix

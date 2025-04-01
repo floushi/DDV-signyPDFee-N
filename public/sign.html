@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Unterschreiben</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="https://storage.googleapis.com/all-time-best-media/never-delete/All_Time_Best_Media.png"
+                 alt="All-Time-Best-Media Logo">
+            <h1>Datenverarbeitungsvereinbarung</h1>
+        </header>
+
+        <div id="pdf-container">
+            <div id="pdf-pages"></div>
+        </div>
+
+        <form id="signature-form" class="form-container">
+            <div class="form-group">
+                <label for="fullName">Vollständiger Name</label>
+                <input type="text" id="fullName" name="fullName" required>
+                <div class="error-message" style="display: none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Ort</label>
+                <input type="text" id="location" name="location" required>
+                <div class="error-message" style="display: none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-Mail</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" style="display: none;"></div>
+            </div>
+
+            <h1 style="text-align: center;">1. Unterschrift</h1>
+            
+            <!-- Signature Method Selection -->
+            <div class="signature-method-selection">
+                <h3>Wie willst du unterzeichnen?</h3>
+                <button type="button" id="signpad-button" class="btn-secondary active">Mit Maus/Touchpad</button>
+                <button type="button" id="keyboard-button" class="btn-secondary">Mit Tastatur</button>
+                <p class="signature-option-text">💡Es reicht aus, eine der beiden Optionen zu nutzen: Maus/Touchpad oder Tastatur.</p>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                        <input type="checkbox" id="terms" required>
+                    Hiermit stimme ich den Vertragsbedingungen verbindlich zu.
+                </label>
+                <div class="error-message" style="display: none;"></div>
+            </div>
+
+            <!-- Vertrag Signature Section -->
+            <div class="signature-section">
+                <div class="signature-group">
+                    <h3>Unterschrift Vertrag per Maus/Touchpad</h3>
+                    <p class="signature-instruction">Bitte mit gedrückter Maustaste oder per Touchpad im Feld unterschreiben.</p>
+                    <div class="signature-pad-container">
+                        <canvas id="signature-pad"></canvas>
+                    </div>
+                    <div class="signature-buttons">
+                        <button type="button" id="clear-signature" class="btn-secondary">Unterschrift löschen</button>
+                    </div>
+                    <div class="signature-status"></div>
+                    <div class="error-message" style="display: none;"></div>
+                </div>
+
+                    <div class="signature-alternative">
+                        <div class="keyboard-signature">
+                            <label for="keyboardSignature">Unterschrift Vertrag per Tastatur</label>
+                            <input type="text" id="keyboardSignature" placeholder="Hier Deinen Namen zum unterzeichnen eintippen" style="width: 100%;">
+                            <div class="keyboard-signature-error" style="display: none;"></div>
+                            <div class="font-preview-grid">
+                                <div class="font-preview">
+                                    <input type="radio" name="contract-font" value="DancingScript-Regular" id="contract-dancing">
+                                    <label for="contract-dancing" class="preview-label dancing-script"></label>
+                                </div>
+                                <div class="font-preview">
+                                    <input type="radio" name="contract-font" value="BarlowSemiCondensed-Regular" id="contract-barlow">
+                                    <label for="contract-barlow" class="preview-label barlow"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="submit-form" class="btn-submit">Bestätigen & Absenden</button>
+            </div>
+
+            <div id="error-message" class="error-message" style="display: none;"></div>
+            <div id="success-message" style="display: none;"></div>
+        </form>
+    </div>
+    <footer>
+        <p class="footer-text">
+            <span id="copyright"></span> 
+            <a href="https://all-time-best-media.com/" target="_blank" style="color: #13384a; text-decoration: none;">All-Time-Best-Media.com</a>
+        </p>
+    </footer>
+    <script src="/sign-script.js"></script>
+    <script>
+        document.getElementById("copyright").innerHTML = `Copyright © ${new Date().getFullYear()} `;
+    </script>
+</body>
+</html>
