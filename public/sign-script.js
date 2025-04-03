@@ -389,7 +389,7 @@ document.getElementById('signature-form').addEventListener('submit', async (e) =
             <h2>Geschafft! Das war's. 🎉</h2>
             
             <div class="success-message">
-                PDF erfolgreich signiert! <a href="${result.pdfUrl}" target="_blank">PDF herunterladen</a>
+                PDF erfolgreich signiert! <a href="/api/download-pdf?url=${encodeURIComponent(result.pdfUrl)}" target="_blank">PDF herunterladen</a>
             </div>
             
             <p class="email-notice">Eine Kopie wird dir per E-Mail zugesendet.</p>
