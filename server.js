@@ -908,11 +908,14 @@ async function storePdfInBucket(pdfBytes, destinationFilename) {
             await file.makePublic();
             const publicUrl = `https://storage.googleapis.com/${global.BUCKET_NAME}/${destinationFilename}`;
             console.log(`PDF made public at: ${publicUrl}`);
-            return publicUrl;
+            return publicUrl; // Return public URL if MAKE_PUBLIC is true
         } else {
-            // Return the GCS URI for private files
-            const gcsUri = `gs://${global.BUCKET_NAME}/${destinationFilename}`;
-            return gcsUri;
+            // Always return the public URL format if files are intended to be public,
+            // even if MAKE_PUBLIC env var is not set to 'true'.
+            // The file might already be public due to bucket settings or previous makePublic() calls.
+            const publicUrl = `https://storage.googleapis.com/${global.BUCKET_NAME}/${destinationFilename}`;
+            console.log(`[WARN] GCS_MAKE_PUBLIC not 'true', but returning public URL format: ${publicUrl}`);
+            return publicUrl;
         }
     } catch (error) {
         console.error(`ERROR uploading PDF to GCS bucket "${global.BUCKET_NAME}":`, error);
