@@ -39,21 +39,25 @@ try {
     }
 
     // --- Google Cloud Storage Configuration ---
-    let storage;
+    // Make storage and BUCKET_NAME global so they can be accessed from anywhere
+    global.storage = null;
+    global.BUCKET_NAME = null;
+    global.MAKE_PUBLIC = false;
+    
     try {
-        storage = new Storage(); // Assumes authentication is handled by the environment (e.g., Cloud Run Service Account)
+        global.storage = new Storage(); // Assumes authentication is handled by the environment (e.g., Cloud Run Service Account)
         console.log("[DEBUG] Instantiated GCS Storage");
     } catch (gcsError) {
         console.error("[DEBUG] FATAL ERROR instantiating GCS Storage:", gcsError);
         process.exit(1); // Exit if GCS client fails to initialize
     }
     // Corrected environment variable name to match Cloud Run settings
-    const BUCKET_NAME = process.env.GCP_BUCKET_NAME; // Required env var: Your GCS bucket name 
-    console.log(`[DEBUG] GCP_BUCKET_NAME: ${BUCKET_NAME}`); // Log the correct variable name
-    const MAKE_PUBLIC = process.env.GCS_MAKE_PUBLIC === 'true'; // Optional: Set to 'true' to make files public
-    console.log(`[DEBUG] GCS_MAKE_PUBLIC: ${MAKE_PUBLIC}`); // This one might be optional or named differently, keeping as is for now
+    global.BUCKET_NAME = process.env.GCP_BUCKET_NAME; // Required env var: Your GCS bucket name 
+    console.log(`[DEBUG] GCP_BUCKET_NAME: ${global.BUCKET_NAME}`); // Log the correct variable name
+    global.MAKE_PUBLIC = process.env.GCS_MAKE_PUBLIC === 'true'; // Optional: Set to 'true' to make files public
+    console.log(`[DEBUG] GCS_MAKE_PUBLIC: ${global.MAKE_PUBLIC}`); // This one might be optional or named differently, keeping as is for now
 
-    if (!BUCKET_NAME) {
+    if (!global.BUCKET_NAME) {
         // Corrected error message
         console.error("[DEBUG] FATAL ERROR: GCP_BUCKET_NAME environment variable is not set."); 
         process.exit(1); // Exit if bucket name is not configured
@@ -283,15 +287,15 @@ app.get('/template', async (req, res) => {
         } catch (fileError) {
             // If template doesn't exist locally, check if it exists in GCS
             try {
-                if (!BUCKET_NAME) {
+                if (!global.BUCKET_NAME) {
                     throw new Error('GCP_BUCKET_NAME environment variable is not set');
                 }
                 
                 const templateGcsPath = 'templates/DVV-All-Time-Best-Media.pdf';
-                const [exists] = await storage.bucket(BUCKET_NAME).file(templateGcsPath).exists();
+                const [exists] = await global.storage.bucket(global.BUCKET_NAME).file(templateGcsPath).exists();
                 
                 if (exists) {
-                    const [templateBytes] = await storage.bucket(BUCKET_NAME).file(templateGcsPath).download();
+                    const [templateBytes] = await global.storage.bucket(global.BUCKET_NAME).file(templateGcsPath).download();
                     res.contentType('application/pdf');
                     res.send(templateBytes);
                     console.log(`Served template PDF from GCS: ${templateGcsPath}`);
@@ -333,8 +337,8 @@ async function loadInitialPdfStore() {
         }
 
         // Try to load from GCS
-        if (BUCKET_NAME) {
-            const storeFile = storage.bucket(BUCKET_NAME).file('config/pdfStore.json');
+        if (global.BUCKET_NAME) {
+            const storeFile = global.storage.bucket(global.BUCKET_NAME).file('config/pdfStore.json');
             const [exists] = await storeFile.exists();
             
             if (exists) {
@@ -366,8 +370,8 @@ async function savePdfStore() {
     
     try {
         // Try to save to GCS first
-        if (BUCKET_NAME) {
-            const storeFile = storage.bucket(BUCKET_NAME).file('config/pdfStore.json');
+        if (global.BUCKET_NAME) {
+            const storeFile = global.storage.bucket(global.BUCKET_NAME).file('config/pdfStore.json');
             await storeFile.save(storeContent, {
                 contentType: 'application/json'
             });
@@ -481,10 +485,10 @@ app.post('/api/pdf-config', async (req, res) => {
             console.log('Template not found locally, trying GCS...');
             try {
                 const templateGcsPath = 'templates/DVV-All-Time-Best-Media.pdf';
-                const [exists] = await storage.bucket(BUCKET_NAME).file(templateGcsPath).exists();
+                const [exists] = await global.storage.bucket(global.BUCKET_NAME).file(templateGcsPath).exists();
                 
                 if (exists) {
-                    [templateBytes] = await storage.bucket(BUCKET_NAME).file(templateGcsPath).download();
+                    [templateBytes] = await global.storage.bucket(global.BUCKET_NAME).file(templateGcsPath).download();
                     console.log(`Template PDF loaded from GCS: ${templateGcsPath}`);
                 } else {
                     throw new Error('Template PDF not found in local filesystem or GCS');
@@ -797,7 +801,7 @@ async function downloadPdfFromGcs(gcsPathOrUrl) {
             bucketName = match[1];
             filePath = match[2];
             // Security check: Ensure the bucket matches the configured one if downloading via public URL
-            if (bucketName !== BUCKET_NAME) {
+            if (bucketName !== global.BUCKET_NAME) {
                  console.warn(`Attempted download from unexpected bucket via public URL: ${bucketName}`);
                  throw new Error(`Invalid bucket in public URL.`);
             }
@@ -806,12 +810,12 @@ async function downloadPdfFromGcs(gcsPathOrUrl) {
         }
 
         // Check if the bucket we are downloading from is the configured one
-        if (bucketName !== BUCKET_NAME) {
+        if (bucketName !== global.BUCKET_NAME) {
              console.warn(`Attempted download from unexpected bucket: ${bucketName}`);
-             throw new Error(`Cannot download from bucket ${bucketName}, expected ${BUCKET_NAME}.`);
+             throw new Error(`Cannot download from bucket ${bucketName}, expected ${global.BUCKET_NAME}.`);
         }
 
-        const [contents] = await storage.bucket(bucketName).file(filePath).download();
+        const [contents] = await global.storage.bucket(bucketName).file(filePath).download();
         console.log(`Downloaded PDF from gs://${bucketName}/${filePath}`);
         return contents; // contents is a Buffer
     } catch (error) {
@@ -834,7 +838,7 @@ async function downloadPdfFromGcs(gcsPathOrUrl) {
  * @returns {Promise<string>} - The GCS URI (gs://...) or public URL (https://...) of the uploaded file.
  */
 async function storePdfInBucket(pdfBytes, destinationFilename) {
-    const file = storage.bucket(BUCKET_NAME).file(destinationFilename);
+    const file = global.storage.bucket(global.BUCKET_NAME).file(destinationFilename);
 
     try {
         await file.save(pdfBytes, {
@@ -843,24 +847,24 @@ async function storePdfInBucket(pdfBytes, destinationFilename) {
                 // Add any other metadata here if needed
             },
             // Optionally set predefined ACL if making public immediately
-            // predefinedAcl: MAKE_PUBLIC ? 'publicRead' : undefined, // Alternative to calling makePublic() later
+            // predefinedAcl: global.MAKE_PUBLIC ? 'publicRead' : undefined, // Alternative to calling makePublic() later
         });
-        console.log(`PDF uploaded to gs://${BUCKET_NAME}/${destinationFilename}`);
+        console.log(`PDF uploaded to gs://${global.BUCKET_NAME}/${destinationFilename}`);
 
-        if (MAKE_PUBLIC) {
+        if (global.MAKE_PUBLIC) {
             // Make the file public if configured
             await file.makePublic();
-            const publicUrl = `https://storage.googleapis.com/${BUCKET_NAME}/${destinationFilename}`;
+            const publicUrl = `https://storage.googleapis.com/${global.BUCKET_NAME}/${destinationFilename}`;
             console.log(`PDF made public at: ${publicUrl}`);
             return publicUrl;
         } else {
             // Return the GCS URI for private files
-            const gcsUri = `gs://${BUCKET_NAME}/${destinationFilename}`;
+            const gcsUri = `gs://${global.BUCKET_NAME}/${destinationFilename}`;
             return gcsUri;
         }
     } catch (error) {
-        console.error(`ERROR uploading PDF to GCS bucket "${BUCKET_NAME}":`, error);
+        console.error(`ERROR uploading PDF to GCS bucket "${global.BUCKET_NAME}":`, error);
         // Re-throw the error to be handled by the calling route
-        throw new Error(`Failed to upload PDF to bucket ${BUCKET_NAME}.`);
+        throw new Error(`Failed to upload PDF to bucket ${global.BUCKET_NAME}.`);
     }
 }
