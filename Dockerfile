@@ -1,6 +1,5 @@
-# Use an official Node.js runtime as a parent image
-# Using alpine variant for smaller size
-FROM node:18-alpine
+# Use the standard Node.js 18 runtime as a parent image (Debian-based, includes more common libraries than Alpine)
+FROM node:18
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -9,19 +8,17 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install app dependencies
-# Use --only=production if you don't need devDependencies
-RUN npm install
+# Clean npm cache and perform a clean install using package-lock.json
+# Use --only=production to avoid installing devDependencies
+RUN npm cache clean --force && npm ci --only=production
 
 # Bundle app source
 # Copy all files from the current directory to the working directory in the container
 COPY . .
 
-# Make port 3000 available to the world outside this container
-EXPOSE 3000
+# Cloud Run injects the PORT environment variable automatically.
+# EXPOSE is not needed as Cloud Run handles port mapping.
+# ENV PORT is not needed as Cloud Run provides the value at runtime.
 
-# Define environment variable for the port
-# Allows overriding the default port 3000
-ENV PORT=3000
-
-# Run the app when the container launches
-CMD [ "npm", "start" ]
+# Start the server
+CMD [ "node", "server.js" ]
