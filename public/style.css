@@ -13,6 +13,8 @@ body {
     background-color: #f5f5f5;
     color: #333;
     line-height: 1.6;
+	hyphens: auto;
+    word-break: break-word;
 }
 
 .container {
@@ -516,4 +518,14 @@ button {
     #pdf-container {
         max-height: 400px;
     }
+}
+	/* Silbentrennung für Fließtext und Überschriften */
+	body,
+	p,
+	h1, h2, h3, h4, h5, h6,
+	.form-container,
+	.signature-option-text,
+	.preview-label {
+		hyphens: auto;
+		word-break: break-word;
 }
