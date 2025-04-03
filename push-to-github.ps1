@@ -15,7 +15,7 @@ if (-not (Test-Path ".git")) {
 }
 
 # Set the specific GitHub repository
-$targetRepo = "https://github.com/floushi/DDV-signyPDFee.git"
+$targetRepo = "https://github.com/yxcyd3871197/DDV-signyPDFee.git"
 
 # Check if remote origin exists
 $remoteExists = git remote | Where-Object { $_ -eq "origin" }

@@ -1,6 +1,6 @@
 # Pushing Local Files to GitHub
 
-This guide will help you push your local files to the GitHub repository: https://github.com/floushi/DDV-signyPDFee
+This guide will help you push your local files to the GitHub repository: https://github.com/yxcyd3871197/DDV-signyPDFee
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ We've created a PowerShell script that automates the process of pushing to GitHu
 
 2. Follow the prompts to commit and push your changes
    
-3. The script will automatically use the correct repository: https://github.com/floushi/DDV-signyPDFee
+3. The script will automatically use the correct repository: https://github.com/yxcyd3871197/DDV-signyPDFee.git
 
 ## Option 2: Manual Steps
 
@@ -34,13 +34,13 @@ git init
 ### 2. Add the specific GitHub repository as a remote
 
 ```bash
-git remote add origin https://github.com/floushi/DDV-signyPDFee.git
+git remote add origin https://github.com/yxcyd3871197/DDV-signyPDFee.git
 ```
 
 Or if the remote already exists but points to a different repository:
 
 ```bash
-git remote set-url origin https://github.com/floushi/DDV-signyPDFee.git
+git remote set-url origin https://github.com/yxcyd3871197/DDV-signyPDFee.git
 ```
 
 ### 3. Add your files to the staging area
