@@ -87,12 +87,25 @@ git push -u origin local-branch-name:remote-branch-name
 
 ### If you get a "rejected" error
 
-This usually happens when the remote repository has changes that you don't have locally. You can try:
+This usually happens when the remote repository has changes that you don't have locally. You have a few options:
 
+#### Option 1: Pull and integrate remote changes (recommended)
 ```bash
 git pull --rebase origin main
 git push origin main
 ```
+
+#### Option 2: Force push (overwrites remote changes - use with caution!)
+```bash
+git push -f origin main
+```
+**Warning**: This will overwrite any changes in the remote repository that aren't in your local repository. Only use this if you're sure you want to discard the remote changes.
+
+#### Option 3: Using our PowerShell script
+Our `push-to-github.ps1` script handles this situation automatically and will give you options to:
+1. Force push (overwrites remote changes)
+2. Pull then push (integrates remote changes)
+3. Abort the push operation
 
 ### If you're asked for credentials
 

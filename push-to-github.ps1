@@ -60,10 +60,45 @@ if ([string]::IsNullOrEmpty($default_branch)) {
 Write-Host "Pushing to GitHub..." -ForegroundColor Yellow
 Write-Host "Using branch: $default_branch" -ForegroundColor Cyan
 
-git push -u origin $default_branch
+# Try normal push first
+$pushResult = git push -u origin $default_branch 2>&1
+$pushSuccess = $LASTEXITCODE -eq 0
+
+# If push failed, offer options
+if (-not $pushSuccess) {
+    Write-Host "Push failed. The remote repository may have changes that aren't in your local repository." -ForegroundColor Red
+    Write-Host "Error message: $pushResult" -ForegroundColor Red
+    
+    $pushOption = Read-Host "Choose an option: [1] Force push (overwrites remote changes), [2] Pull then push (integrates remote changes), [3] Abort"
+    
+    switch ($pushOption) {
+        "1" {
+            Write-Host "Force pushing to GitHub..." -ForegroundColor Yellow
+            git push -f -u origin $default_branch
+            $pushSuccess = $LASTEXITCODE -eq 0
+        }
+        "2" {
+            Write-Host "Pulling from GitHub..." -ForegroundColor Yellow
+            git pull --rebase origin $default_branch
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "Pull successful. Pushing to GitHub..." -ForegroundColor Yellow
+                git push -u origin $default_branch
+                $pushSuccess = $LASTEXITCODE -eq 0
+            } else {
+                Write-Host "Pull failed. You may need to resolve conflicts manually." -ForegroundColor Red
+                $pushSuccess = $false
+            }
+        }
+        default {
+            Write-Host "Push aborted." -ForegroundColor Yellow
+            $pushSuccess = $false
+        }
+    }
+}
 
 # Check if push was successful
-if ($LASTEXITCODE -eq 0) {
+if ($pushSuccess) {
     Write-Host "Successfully pushed to GitHub!" -ForegroundColor Green
     $currentRemote = git remote get-url origin
     Write-Host "Your repository is now available at: $currentRemote" -ForegroundColor Cyan
