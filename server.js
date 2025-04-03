@@ -273,6 +273,28 @@ app.get('/sign/:pdfId', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'sign.html'));
 });
 
+// Add a new endpoint to get PDF URL by ID
+app.get('/api/pdf/:pdfId', async (req, res) => {
+    try {
+        const pdfId = req.params.pdfId;
+        const pdfData = pdfStore[pdfId];
+        
+        if (!pdfData || !pdfData.pdfUrl) {
+            return res.status(404).json({ error: 'PDF nicht gefunden oder ungültige ID.' });
+        }
+        
+        // Download the PDF from GCS
+        const pdfBytes = await downloadPdfFromGcs(pdfData.pdfUrl);
+        
+        // Send the PDF directly
+        res.contentType('application/pdf');
+        res.send(pdfBytes);
+    } catch (error) {
+        console.error('Error serving PDF:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Serve the initial template PDF
 app.get('/template', async (req, res) => {
     try {
