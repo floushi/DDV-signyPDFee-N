@@ -224,13 +224,13 @@ if (!port) {
 // --- End Port Configuration ---
 console.log(`[DEBUG] Port configured: ${port}`);
 
+// --- Base Middleware ---
 try {
     app.use(express.json());
     console.log("[DEBUG] Applied express.json middleware");
     app.use(express.urlencoded({ extended: true }));
     console.log("[DEBUG] Applied express.urlencoded middleware");
-    app.use(express.static('public'));
-    console.log("[DEBUG] Applied express.static middleware for 'public' directory");
+    // Note: express.static is applied AFTER API routes below
 } catch (middlewareError) {
     console.error("[DEBUG] FATAL ERROR applying base middleware:", middlewareError);
     process.exit(1);
@@ -248,10 +248,8 @@ try {
     process.exit(1);
 }
 
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// --- API Routes ---
+// Define API routes BEFORE static file serving
 
 // Health check endpoint for Google Cloud Run
 app.get('/_health', (req, res) => {
@@ -263,17 +261,7 @@ app.get('/_health', (req, res) => {
     });
 });
 
-// Add route for base sign page (no PDF)
-app.get('/sign', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'sign.html'));
-});
-
-// Serve the signing page with PDF
-app.get('/sign/:pdfId', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'sign.html'));
-});
-
-// Add a new endpoint to get PDF URL by ID
+// Add a new endpoint to get PDF URL by ID (for displaying in sign page)
 app.get('/api/pdf/:pdfId', async (req, res) => {
     try {
         const pdfId = req.params.pdfId;
@@ -291,6 +279,27 @@ app.get('/api/pdf/:pdfId', async (req, res) => {
         res.send(pdfBytes);
     } catch (error) {
         console.error('Error serving PDF:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Add a new endpoint to download a PDF by its GCS URL
+app.get('/api/download-pdf', async (req, res) => {
+    try {
+        const pdfUrl = req.query.url;
+        if (!pdfUrl) {
+            return res.status(400).json({ error: 'No PDF URL provided' });
+        }
+        
+        // Download the PDF from GCS
+        const pdfBytes = await downloadPdfFromGcs(pdfUrl);
+        
+        // Set headers for file download
+        res.setHeader('Content-Disposition', 'attachment; filename="signed-document.pdf"');
+        res.contentType('application/pdf');
+        res.send(pdfBytes);
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -607,7 +616,6 @@ app.post('/api/pdf-config', async (req, res) => {
 });
 
 // Handle PDF signing
-// Note: The '/api/pdf/:pdfId' GET route has been removed as PDFs are now served directly from GCS URLs/URIs
 app.post('/api/sign', async (req, res) => {
     try {
         const {
@@ -759,6 +767,28 @@ app.post('/api/sign', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+
+// --- Static Files & Fallback Routes ---
+// Serve static files AFTER checking API routes
+app.use(express.static('public'));
+console.log("[DEBUG] Applied express.static middleware for 'public' directory");
+
+// Fallback route for root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Fallback routes for signing pages (needed if static serving doesn't catch them)
+app.get('/sign', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'sign.html'));
+});
+app.get('/sign/:pdfId', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'sign.html'));
+});
+
+
+// --- Server Start ---
 
 // Start the server listening on the specified port and host
 const server = app.listen(port, '0.0.0.0', () => {
